@@ -527,15 +527,24 @@ h2{font-size:clamp(1.68rem,3.5vw,2.78rem);line-height:1.08}.lead{font-size:.98re
 </section>
 <section data-searchable="" id="glossary"><div class="section-head"><span class="num">A–Z</span><div><h2>Fluency Vocabulary</h2><p class="lead">A compact language for discussing the collection precisely.</p></div></div><dl class="glossary"><div class="term"><dt>Agency</dt><dd>Meaningful action whose results the player can perceive.</dd></div><div class="term"><dt>Authored glue</dt><dd>Connective content that preserves continuity between variably ordered scenes.</dd></div><div class="term"><dt>Combinatorial explosion</dt><dd>Production and test cost growing faster than the number of choices.</dd></div><div class="term"><dt>Consequence</dt><dd>A state change that affects later possibilities or outcomes.</dd></div><div class="term"><dt>Coverage</dt><dd>The set of shots needed to present and edit a scene.</dd></div><div class="term"><dt>Drama manager</dt><dd>A system that selects or schedules events to regulate dramatic form, pacing or intensity.</dd></div><div class="term"><dt>Emergent narrative</dt><dd>A story interpreted from interacting simulation systems.</dd></div><div class="term"><dt>Fail-forward</dt><dd>Failure changes the story instead of forcing repetition.</dd></div><div class="term"><dt>Foldback</dt><dd>Branches produce local variation before returning to shared content.</dd></div><div class="term"><dt>Micro-reactivity</dt><dd>Small acknowledgements that make a system feel attentive.</dd></div><div class="term"><dt>Narrative debt</dt><dd>Future content required to make an earlier choice coherent or visible.</dd></div><div class="term"><dt>Player-as-actor</dt><dd>The player retains expressive participation inside cinematic staging.</dd></div><div class="term"><dt>Procedural staging</dt><dd>Rule-based placement, movement and behavior of performers.</dd></div><div class="term"><dt>Recognition vs. consequence</dt><dd>Acknowledgement of an action versus a material change to the possibility space.</dd></div><div class="term"><dt>Signal-to-noise</dt><dd>The relation between essential narrative information and competing stimuli.</dd></div><div class="term"><dt>Storylet</dt><dd>A modular narrative unit selected when its preconditions are met.</dd></div></dl></section>
 </main>
-<footer><p><strong>Selection note.</strong> This concise edition prioritizes selected chapters, film sequences, quest excerpts and high-value talks over broad completion. Audience signals are rounded snapshots retained from the prior researched atlas. Links open in a new tab; streaming and library availability varies by region.</p><p>Standalone progress uses local storage. Some privacy modes or browser policies may clear or block local-file storage.</p></footer>
+<footer><p><strong>Selection note.</strong> This concise edition prioritizes selected chapters, film sequences, quest excerpts and high-value talks over broad completion. Audience signals are rounded snapshots retained from the prior researched atlas. Links open in a new tab; streaming and library availability varies by region.</p><p>Reference completion, episode progress and the active queue are shared through Supabase and sync across visitors. This is a public collaborative tracker: anyone who can access the site can change the shared progress. A local browser cache is also kept as a temporary fallback.</p></footer>
 <a aria-label="Back to top" class="toplink" href="#top">↑</a>
-<div class="queue-tooltip" hidden="" id="queue-tooltip" role="tooltip"></div><script>
+<div class="queue-tooltip" hidden="" id="queue-tooltip" role="tooltip"></div><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
 (()=>{
 const STORAGE_KEY='cyberpunk-reference-atlas-curated-progress-v1';
 const LEGACY_STORAGE_KEY='cyberpunk-reference-atlas-two-week-progress-v1';
 const LEGACY_EPISODE_STORAGE_KEY='cyberpunk-reference-atlas-episodes-v1';
 const SEASON_STORAGE_KEY='cyberpunk-reference-atlas-season-progress-v1';
 const QUEUE_STORAGE_KEY='cyberpunk-reference-atlas-queue-v1';
+// Public browser credentials. RLS on the Supabase table limits the row this site can access.
+const SUPABASE_URL='https://lyhupwjpbjprvmgalspk.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY='sb_publishable_EfMShTkCaBW2FuoewyA8qg_r87t9Kso';
+const SUPABASE_TABLE='shared_tracker_state';
+const supabaseClient=window.supabase?.createClient
+  ? window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:false,autoRefreshToken:false}})
+  : null;
+let remoteReady=false,remoteApplying=false,remoteSaveTimer=null,lastRemoteStateJSON='';
 const EXPORT_FORMAT='cyberpunk-rpg-reference-atlas-progress';
 const SCHEMA_VERSION=3;
 const ATLAS_VERSION='2026.11-queue-repair.1';
@@ -557,10 +566,127 @@ const read=()=>{
  for(const card of cards.filter(c=>c.dataset.season)){const id=card.dataset.referenceId,{ids,total}=seasonMeta(card);let n=sequential&&Number.isInteger(sequential[id])?sequential[id]:contiguousPrefix(legacyEpisodes?.[id],ids);if(!n&&completed.has(id))n=total;seasonProgress[id]=Math.max(0,Math.min(total,n))}
  const q=parseJSON(safeStorage.get(QUEUE_STORAGE_KEY)||'[]',[]);if(Array.isArray(q))queue=q.filter(x=>typeof x==='string');
 };
-const save=()=>{const ok=[safeStorage.set(STORAGE_KEY,JSON.stringify([...completed])),safeStorage.set(SEASON_STORAGE_KEY,JSON.stringify(seasonProgress)),safeStorage.set(QUEUE_STORAGE_KEY,JSON.stringify(queue))].every(Boolean);if(!ok&&status)report('Progress works for this open session, but this browser is blocking persistent storage for the local file. Export progress to retain it.','warning');return ok};
+const sharedStateSnapshot=()=>({completed:[...completed],seasonProgress:{...seasonProgress},queue:[...queue]});
+const normalizeSharedState=raw=>{
+ const value=raw&&typeof raw==='object'&&!Array.isArray(raw)?raw:{};
+ const seasons=value.seasonProgress&&typeof value.seasonProgress==='object'&&!Array.isArray(value.seasonProgress)?value.seasonProgress:{};
+ return {
+  completed:Array.isArray(value.completed)?[...new Set(value.completed.filter(x=>typeof x==='string'))]:[],
+  seasonProgress:{...seasons},
+  queue:Array.isArray(value.queue)?[...new Set(value.queue.filter(x=>typeof x==='string'))]:[]
+ };
+};
+const hasSavedProgress=state=>state.completed.length>0||Object.values(state.seasonProgress).some(x=>Number.isInteger(x)&&x>0)||state.queue.length>0;
+function scheduleRemoteSave(){
+ if(!supabaseClient||!remoteReady||remoteApplying)return;
+ clearTimeout(remoteSaveTimer);
+ report('Syncing shared progress…','warning');
+ remoteSaveTimer=setTimeout(async()=>{
+  remoteSaveTimer=null;
+  const state=sharedStateSnapshot(),serialized=JSON.stringify(state);
+  if(serialized===lastRemoteStateJSON){report('Shared progress is up to date.','success',1800);return}
+  try{
+   const {data,error}=await supabaseClient.from(SUPABASE_TABLE).update({state,updated_at:new Date().toISOString()}).eq('id','global').select('id').maybeSingle();
+   if(error)throw error;
+   if(!data)throw new Error('The shared tracker row was not found or the database denied the update.');
+   lastRemoteStateJSON=serialized;
+   report('Shared progress saved. Other visitors will receive the update.','success',2200);
+  }catch(error){
+   console.error('Supabase save failed:',error);
+   report(`Cloud sync failed: ${error.message||'Unknown database error'}. Your changes remain in this browser; check the Supabase table and policies.`,'error');
+  }
+ },350);
+}
+const save=()=>{
+ const ok=[safeStorage.set(STORAGE_KEY,JSON.stringify([...completed])),safeStorage.set(SEASON_STORAGE_KEY,JSON.stringify(seasonProgress)),safeStorage.set(QUEUE_STORAGE_KEY,JSON.stringify(queue))].every(Boolean);
+ if(!ok&&status&&!remoteReady)report('Local browser storage is blocked. Cloud sync will still work when connected.','warning');
+ scheduleRemoteSave();
+ return ok;
+};
 const meter=document.getElementById('progress'),status=document.getElementById('progress-status');let statusDismissTimer=null;
 const report=(message,state='success',dismissAfter=0)=>{clearTimeout(statusDismissTimer);status.textContent=message;status.dataset.state=state;if(dismissAfter>0)statusDismissTimer=setTimeout(()=>{status.textContent='';status.removeAttribute('data-state')},dismissAfter)};
 const updateMeter=()=>{const done=cards.filter(c=>c.classList.contains('is-complete')).length;meter.innerHTML=`<strong>${done}</strong> / ${cards.length} complete`};
+function applySharedState(raw){
+ const state=normalizeSharedState(raw);
+ remoteApplying=true;
+ try{
+  completed=new Set(state.completed.filter(id=>cardById.has(id)));
+  seasonProgress={};
+  for(const card of cards.filter(c=>c.dataset.season)){
+   const id=card.dataset.progressId,{total}=seasonMeta(card),value=state.seasonProgress[id];
+   const fallback=completed.has(id)?total:0;
+   seasonProgress[id]=Math.max(0,Math.min(total,Number.isInteger(value)?value:fallback));
+  }
+  for(const card of cards){
+   const id=card.dataset.progressId;
+   if(card.dataset.season){syncSeason(id);continue}
+   const box=card.querySelector('.completion-control input');
+   const isDone=completed.has(id);
+   if(box)box.checked=isDone;
+   setCardState(card,isDone,id);
+  }
+  queue=state.queue.filter(id=>cardById.has(id));
+  for(const card of cards.filter(c=>c.dataset.season))syncSeason(card.dataset.progressId);
+  save();
+  updateMeter();
+  renderQueue();
+ }finally{remoteApplying=false}
+ lastRemoteStateJSON=JSON.stringify(sharedStateSnapshot());
+}
+async function initializeSharedTracker(){
+ if(!supabaseClient){
+  report('The Supabase library did not load. This page is using local browser storage only. Check your internet connection or CDN access.','error');
+  return;
+ }
+ report('Connecting to the shared reference tracker…','warning');
+ try{
+  const {data,error}=await supabaseClient.from(SUPABASE_TABLE).select('state,updated_at').eq('id','global').single();
+  if(error)throw error;
+  const remoteState=data?.state&&typeof data.state==='object'?data.state:{};
+  const hasRemoteState=Object.keys(remoteState).length>0;
+  if(!hasRemoteState){
+   const localState=sharedStateSnapshot();
+   if(hasSavedProgress(localState)){
+    const {data:seeded,error:seedError}=await supabaseClient.from(SUPABASE_TABLE).update({state:localState,updated_at:new Date().toISOString()}).eq('id','global').select('id').maybeSingle();
+    if(seedError)throw seedError;
+    if(!seeded)throw new Error('The shared tracker row was not found while importing this browser’s existing progress.');
+    applySharedState(localState);
+    report('Connected. Existing progress from this browser has been copied into the shared tracker.','success');
+   }else{
+    applySharedState({});
+    report('Connected to the shared tracker. Changes will sync for everyone.','success');
+   }
+  }else{
+   applySharedState(remoteState);
+   report('Connected. Shared progress has been loaded from Supabase.','success');
+  }
+  remoteReady=true;
+  lastRemoteStateJSON=JSON.stringify(sharedStateSnapshot());
+  supabaseClient.channel('cyberpunk-atlas-shared-tracker')
+   .on('postgres_changes',{event:'UPDATE',schema:'public',table:SUPABASE_TABLE,filter:'id=eq.global'},payload=>{
+    if(!remoteReady||remoteApplying)return;
+    const incoming=normalizeSharedState(payload.new?.state),incomingJSON=JSON.stringify(incoming);
+    if(incomingJSON===lastRemoteStateJSON)return;
+    if(remoteSaveTimer){
+     // Keep this visitor's just-made change rather than silently discarding a pending save.
+     clearTimeout(remoteSaveTimer);remoteSaveTimer=null;
+     scheduleRemoteSave();
+     return;
+    }
+    applySharedState(incoming);
+    report('Shared progress updated by another visitor.','success',2000);
+   })
+   .subscribe(channelStatus=>{
+    if(channelStatus==='SUBSCRIBED')report('Live sync is active. Everyone is viewing the shared tracker.','success',2600);
+    else if(channelStatus==='CHANNEL_ERROR'||channelStatus==='TIMED_OUT')report('Database is connected, but live updates could not be established. Refresh to retry.','warning');
+   });
+ }catch(error){
+  console.error('Supabase initialization failed:',error);
+  remoteReady=false;
+  report(`Could not connect to the shared tracker: ${error.message||'Unknown error'}. Local progress remains available. Check your Supabase table, API permissions and RLS policies.`,'error');
+ }
+}
+
 const setCardState=(card,value,key)=>{if(!value)card.classList.remove('completion-flash');card.classList.toggle('is-complete',value);card.dataset.completed=String(value);if(value)completed.add(key);else completed.delete(key)};
 const parseDuration=card=>{if(card.dataset.durationMin)return{min:+card.dataset.durationMin,max:+card.dataset.durationMax||+card.dataset.durationMin,known:true};const text=card.querySelector('.duration-badge')?.textContent||'';let m=text.match(/(\d+)\s*[–-]\s*(\d+)\s*min/i);if(m)return{min:+m[1],max:+m[2],known:true};m=text.match(/(\d+)\s*hr(?:\s*(\d+)\s*min)?/i);if(m){const n=+m[1]*60+(m[2]?+m[2]:0);return{min:n,max:n,known:true}}m=text.match(/(~?)(\d+)\s*min/i);if(m)return{min:+m[2],max:+m[2],known:true};return{min:0,max:0,known:false}};
 const formatMinutes=n=>{if(n<60)return`${n} min`;const h=Math.floor(n/60),m=n%60;return m?`${h} hr ${m} min`:`${h} hr`};
@@ -597,11 +723,12 @@ queueList.addEventListener('dragover',e=>{if(!liveDrag||liveDrag.mode!=='desktop
 function renderQueue(){if(liveDrag)cleanupLiveDrag(false);hideTooltip();queue=[...new Set(queue)].filter(id=>cardById.has(id));while(queueList.firstChild)queueList.removeChild(queueList.firstChild);queueEmpty.hidden=queue.length>0;for(const [index,id] of queue.entries()){const card=cardById.get(id),title=card.querySelector('h3').textContent.trim(),href=card.querySelector('h3 a').href,li=document.createElement('li');li.className='queue-item';li.dataset.referenceId=id;li.draggable=true;li.tabIndex=0;li.setAttribute('aria-label',`${title}. Use Alt plus Up or Down Arrow to reorder.`);const handle=document.createElement('button');handle.type='button';handle.className='queue-handle';handle.textContent='⠿';handle.setAttribute('aria-label',`Drag ${title} to reorder`);const main=document.createElement('div');main.className='queue-main queue-tooltip-trigger';main.tabIndex=0;main.setAttribute('aria-label',`${title}. Focus for description.`);const label=document.createElement('div');label.className='queue-label';const titleLink=document.createElement('a');titleLink.className='queue-title-link';titleLink.href=href;titleLink.target='_blank';titleLink.rel='noopener';titleLink.textContent=title;titleLink.draggable=false;titleLink.addEventListener('dragstart',e=>e.preventDefault());label.append(titleLink);main.append(label);if(card.dataset.season)createSeasonStepper(main,id,'queue');const runtime=document.createElement('span');runtime.className='queue-runtime';const actions=document.createElement('div');actions.className='queue-actions';const make=(text,aria,fn,cls='')=>{const b=document.createElement('button');b.type='button';b.className=`queue-action ${cls}`.trim();b.textContent=text;b.setAttribute('aria-label',`${aria} ${title}`);b.addEventListener('click',fn);return b};actions.append(make('✓','Mark complete and remove',e=>{e.stopPropagation();completeAndRemove(id,li)},'complete'),make('×','Remove without completing',()=>{hideTooltip();queue=queue.filter(x=>x!==id);save();renderQueue();report(`Removed ${title} from the queue.`,'success',4000)},'remove'));li.append(handle,main,runtime,actions);queueList.append(li);const scheduleTooltip=()=>{clearTimeout(tooltipTimer);tooltipTimer=setTimeout(()=>showTooltip(li,card,main),1000)};li.addEventListener('pointerenter',e=>{if(!liveDrag&&e.pointerType!=='touch')scheduleTooltip()});li.addEventListener('pointerleave',hideTooltip);main.addEventListener('focus',()=>showTooltip(li,card,main));main.addEventListener('click',e=>{if(e.target.closest('a,button'))return;showTooltip(li,card,main)});li.addEventListener('focusout',e=>{if(!li.contains(e.relatedTarget))hideTooltip()});li.addEventListener('keydown',e=>{if(e.key==='Escape'){hideTooltip();cleanupLiveDrag(false)}if(e.altKey&&e.key==='ArrowUp'){e.preventDefault();moveQueue(id,-1);queueList.querySelector(`[data-reference-id="${id}"]`)?.focus()}if(e.altKey&&e.key==='ArrowDown'){e.preventDefault();moveQueue(id,1);queueList.querySelector(`[data-reference-id="${id}"]`)?.focus()}});li.addEventListener('dragstart',e=>{desktopDragId=id;beginLiveDrag(li,id,'desktop');if(e.dataTransfer){e.dataTransfer.setData('text/plain',id);e.dataTransfer.effectAllowed='move';try{e.dataTransfer.setDragImage(li,24,20)}catch(_){}}});li.addEventListener('drag',e=>{if(e.clientY) scheduleMarker(e.clientY)});li.addEventListener('dragend',()=>{desktopDragId=null;if(liveDrag)cleanupLiveDrag(false)});li.addEventListener('drop',e=>{e.preventDefault();cleanupLiveDrag(true)});bindTouch(handle,li)}for(const [id,card] of cardById){const b=card.querySelector('.queue-add'),inside=queue.includes(id);b.classList.toggle('in-queue',inside);b.textContent=inside?'✓':'+';b.setAttribute('aria-label',inside?`${card.querySelector('h3').textContent.trim()} is in queue`:`Add ${card.querySelector('h3').textContent.trim()} to queue`)}for(const id of queue)if(cardById.get(id)?.dataset.season)syncSeason(id);renderQueueTimesOnly()}
 function bindTouch(handle,item){let active=false,pointerId=null,id=item.dataset.referenceId;const move=e=>{if(!active||e.pointerId!==pointerId)return;e.preventDefault();scheduleMarker(e.clientY)};const finish=e=>{if(!active||(e&&e.pointerId!==pointerId))return;if(e&&Number.isFinite(e.clientY))placeMarker(e.clientY);active=false;document.removeEventListener('pointermove',move);document.removeEventListener('pointerup',finish);document.removeEventListener('pointercancel',cancel);cleanupLiveDrag(true)};const cancel=e=>{if(!active||(e&&e.pointerId!==pointerId))return;active=false;document.removeEventListener('pointermove',move);document.removeEventListener('pointerup',finish);document.removeEventListener('pointercancel',cancel);cleanupLiveDrag(false)};handle.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse')return;active=true;pointerId=e.pointerId;beginLiveDrag(item,id,'touch');try{handle.setPointerCapture(pointerId)}catch(_){}document.addEventListener('pointermove',move,{passive:false});document.addEventListener('pointerup',finish);document.addEventListener('pointercancel',cancel);e.preventDefault()})}
 window.addEventListener('resize',()=>{if(tooltipOwner&&!tooltip.hidden)positionTooltip(tooltipOwner)});window.addEventListener('scroll',()=>{if(tooltipOwner&&!tooltip.hidden)positionTooltip(tooltipOwner)},true);
-save();updateMeter();renderQueue();if(!persistentStorageAvailable)report('Queue and progress are working in session-only mode because persistent storage is blocked. Use Export progress before closing the file.','warning');
+save();updateMeter();renderQueue();if(!persistentStorageAvailable)report('Local browser storage is blocked. The shared cloud tracker will still be used if the connection succeeds.','warning');
 const exportButton=document.getElementById('export-progress');exportButton.addEventListener('click',()=>{try{const states=cards.map(card=>({id:card.dataset.progressId,completed:card.classList.contains('is-complete')})),legacyEpisodes={};for(const card of cards.filter(c=>c.dataset.season)){const id=card.dataset.progressId,{ids}=seasonMeta(card),n=seasonProgress[id]||0;legacyEpisodes[id]=ids.slice(0,n)}const payload={format:EXPORT_FORMAT,schemaVersion:SCHEMA_VERSION,atlasVersion:ATLAS_VERSION,exportedAt:new Date().toISOString(),referenceCount:cards.length,states,seasonProgress:{...seasonProgress},episodeProgress:legacyEpisodes,queue:[...queue]};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='cyberpunk-rpg-reference-atlas-progress.json';document.body.append(link);link.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true,view:window}));setTimeout(()=>{link.remove();URL.revokeObjectURL(url)},30000);report(`Exported ${cards.length} reference states, sequential season progress and ${queue.length} queued items.`,'success')}catch(_){report('Progress could not be exported in this browser.','error')}});
 const readFileText=file=>typeof file.text==='function'?file.text():new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result||''));reader.onerror=()=>reject(reader.error||new Error('File read failed'));reader.readAsText(file)});
 const importInput=document.getElementById('import-progress');document.getElementById('import-progress-trigger').addEventListener('click',()=>importInput.click());importInput.addEventListener('change',async()=>{const file=importInput.files?.[0];importInput.value='';if(!file)return;if(file.size>1000000){report('Import rejected: the selected file is larger than 1 MB.','error');return}let data;try{data=JSON.parse(await readFileText(file))}catch(_){report('Import failed: the file is not valid JSON. No progress was changed.','error');return}if(!data||typeof data!=='object'||Array.isArray(data)||data.format!==EXPORT_FORMAT){report('Import failed: this is not a compatible Atlas progress file. No progress was changed.','error');return}if(![1,2,3].includes(data.schemaVersion)){report(`Import failed: unsupported schema version ${String(data.schemaVersion)}. No progress was changed.`,'error');return}if(!Array.isArray(data.states)){report('Import failed: the file has no valid states array. No progress was changed.','error');return}let duplicates=0,unknown=0,malformed=0;const seen=new Set(),updates=[];for(const entry of data.states){if(!entry||typeof entry!=='object'||typeof entry.id!=='string'||!entry.id.trim()||entry.id.length>200||typeof entry.completed!=='boolean'){malformed++;continue}const id=entry.id.trim();if(seen.has(id)){duplicates++;continue}seen.add(id);const card=cardById.get(id);if(!card){unknown++;continue}updates.push([card,entry.completed,id])}for(const [card,value,id] of updates){if(card.dataset.season)continue;const box=card.querySelector('.completion-control input');box.checked=value;setCardState(card,value,id)}let seasonImported=0;const importedSeasonIds=new Set();if(data.schemaVersion>=3&&data.seasonProgress!==undefined){if(!data.seasonProgress||typeof data.seasonProgress!=='object'||Array.isArray(data.seasonProgress))malformed++;else for(const [id,raw] of Object.entries(data.seasonProgress)){const card=cardById.get(id);if(!card||!card.dataset.season){unknown++;continue}const {total}=seasonMeta(card);if(!Number.isInteger(raw)||raw<0||raw>total){malformed++;continue}seasonProgress[id]=raw;importedSeasonIds.add(id);seasonImported++}}if(data.schemaVersion===2&&data.episodeProgress!==undefined){if(!data.episodeProgress||typeof data.episodeProgress!=='object'||Array.isArray(data.episodeProgress))malformed++;else for(const card of cards.filter(c=>c.dataset.season)){const id=card.dataset.progressId,raw=data.episodeProgress[id];if(raw===undefined)continue;if(!Array.isArray(raw)){malformed++;continue}const {ids}=seasonMeta(card),valid=new Set(ids),seenEpisodes=new Set(),accepted=[];for(const episodeId of raw){if(typeof episodeId!=='string'){malformed++;continue}if(seenEpisodes.has(episodeId)){duplicates++;continue}seenEpisodes.add(episodeId);if(!valid.has(episodeId)){unknown++;continue}accepted.push(episodeId)}seasonProgress[id]=contiguousPrefix(accepted,ids);importedSeasonIds.add(id);seasonImported++}}for(const [card,value,id] of updates.filter(x=>x[0].dataset.season)){if(importedSeasonIds.has(id))continue;seasonProgress[id]=value?seasonMeta(card).total:0;seasonImported++}for(const card of cards.filter(c=>c.dataset.season))syncSeason(card.dataset.progressId);let queueImported=false;if(data.schemaVersion>=2&&data.queue!==undefined){if(!Array.isArray(data.queue))malformed++;else{const seenQueue=new Set();queue=[];for(const raw of data.queue){if(typeof raw!=='string'){malformed++;continue}if(seenQueue.has(raw)){duplicates++;continue}seenQueue.add(raw);if(!cardById.has(raw)){unknown++;continue}queue.push(raw)}queueImported=true}}save();updateMeter();renderQueue();const missing=cards.length-updates.length,legacyNote=data.schemaVersion<3?' Earlier file imported; episode checkboxes were safely migrated to sequential progress where present.':'',versionNote=data.atlasVersion&&data.atlasVersion!==ATLAS_VERSION?` Source atlas version ${String(data.atlasVersion)} differs; matching stable IDs were still restored.`:'';report(`Imported ${updates.length} matching reference states${seasonImported?`, ${seasonImported} season progress values`:''}${queueImported?` and ${queue.length} queued items`:''}. ${missing} references absent from the file were left unchanged; ${unknown} unknown, ${duplicates} duplicate and ${malformed} malformed records ignored.${legacyNote}${versionNote}`,unknown||duplicates||malformed||missing||versionNote?'warning':'success')});
 const search=document.getElementById('search'),sections=[...document.querySelectorAll('[data-searchable]')],empty=document.getElementById('empty');search.addEventListener('input',()=>{const q=search.value.trim().toLowerCase();let visible=0;sections.forEach(section=>{const items=[...section.querySelectorAll('.resource,.term')];if(!q){section.classList.remove('hidden');items.forEach(x=>x.classList.remove('hidden'));visible++;return}let hits=0;items.forEach(item=>{const ok=(item.dataset.searchText||item.textContent.toLowerCase()).includes(q);item.classList.toggle('hidden',!ok);if(ok)hits++});const head=section.querySelector('.section-head')?.textContent.toLowerCase().includes(q);if(head)items.forEach(x=>x.classList.remove('hidden'));section.classList.toggle('hidden',!head&&!hits);if(head||hits)visible++});empty.classList.toggle('show',visible===0)});
+initializeSharedTracker();
 })();
 </script>
 </body></html>
