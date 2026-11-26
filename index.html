@@ -1,5 +1,19 @@
 <!DOCTYPE html>
 
+<!--
+DEVELOPER MAINTENANCE — CANONICAL SUPABASE MASTER / NON-REGRESSION CONTRACT
+Before any future patch, reconcile the input against all of these invariants:
+1. No visible “Keep These Distinctions Active” section, heading, body, navigation entry, anchor, styling, or script hook.
+2. No progress import/export controls or related JavaScript. Supabase plus local fallback are the only persistence path.
+3. Routine saves never use a popup or full-width notification banner.
+4. The persistent top bar shows inline yellow “Syncing...” then green “Saved.” immediately after completion progress; meaningful offline/error warnings remain inline.
+5. The All / Watched / Unwatched filter has no leading decorative square or pseudo-element.
+6. Preserve every canonical reference, stable data-reference-id, title, URL, runtime, ordering, Supabase setting, queue behavior, and Edgerunners state.
+Run validateCanonicalMaster() and the external inventory checks before publishing.
+
+INTERNAL CHANGELOG — 2026-11-25: Corrected file designated the sole canonical Supabase master; removed the distinctions block and import/export regression, restored compact inline sync status, and added non-disruptive invariant validation. Explicit-addition audit restored the 15-minute Songbird memories reference and reconfirmed all 70 stable reference IDs.
+-->
+
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
@@ -15,7 +29,7 @@ body{margin:0;background:radial-gradient(circle at 12% 0%,rgba(94,242,255,.12),t
 a{color:var(--cyan);text-decoration-thickness:1px;text-underline-offset:3px}a:hover{color:#fff}.skip{position:absolute;left:-9999px}.skip:focus{left:12px;top:12px;background:#fff;color:#000;padding:10px;z-index:1000}
 .topbar{position:sticky;top:0;z-index:20;border-bottom:1px solid rgba(94,242,255,.18);background:rgba(9,11,19,.88);backdrop-filter:blur(18px)}.topbar-inner{max-width:var(--max);margin:auto;padding:11px 20px;display:flex;gap:12px;align-items:center}.brand{font-weight:900;letter-spacing:.07em;text-transform:uppercase;white-space:nowrap}.brand b{color:var(--pink)}.progress{color:var(--muted);font-size:.78rem;white-space:nowrap}.progress strong{color:var(--green)}
 
-.progress-sync{display:flex;align-items:center;gap:8px;min-width:0;flex:0 1 auto}.progress-status{display:inline-flex;align-items:center;min-width:0;max-width:min(46vw,520px);padding:5px 8px;border-left:2px solid transparent;color:var(--muted);font-size:.78rem;line-height:1.35;overflow-wrap:anywhere}.progress-status:empty{display:none}.progress-status[data-brief="true"]{white-space:nowrap}.progress-status[data-state="success"]{color:var(--green);border-color:var(--green);background:#07150f}.progress-status[data-state="warning"]{color:var(--yellow);border-color:var(--yellow);background:#141607}.progress-status[data-state="error"]{color:#ff9f9f;border-color:#ff8c96;background:#180a0d}
+.tool-button{min-height:36px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:10px;padding:6px 10px;background:#111827;color:var(--ink);font:inherit;font-size:.76rem;font-weight:800;cursor:pointer;white-space:nowrap}.tool-button:hover{border-color:var(--cyan);background:#172033}.tool-button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}.progress-status:empty{display:none}
 .search{margin-left:auto;position:relative;max-width:390px;width:100%}.search input{width:100%;border:1px solid var(--line);border-radius:999px;background:#0c101b;color:var(--ink);padding:9px 15px 9px 38px;font:inherit}.search input:focus{outline:2px solid var(--cyan);outline-offset:2px}.search span{position:absolute;left:14px;top:9px;color:var(--muted)}
 header{max-width:var(--max);margin:auto;padding:68px 20px 32px}.eyebrow{color:var(--yellow);font-size:.78rem;font-weight:900;letter-spacing:.18em;text-transform:uppercase}h1{font-size:clamp(2.45rem,6.5vw,5.8rem);line-height:.94;letter-spacing:-.06em;margin:.28em 0 .25em;max-width:1000px}h1 em{font-style:normal;color:transparent;-webkit-text-stroke:1.5px var(--cyan)}.dek{font-size:clamp(1.05rem,2.1vw,1.38rem);color:var(--muted);max-width:880px}.meta,.tags,.legend{display:flex;flex-wrap:wrap;gap:7px}.meta{margin-top:22px}.pill,.tag{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;padding:4px 9px;color:var(--muted);font-size:.74rem;background:rgba(17,21,34,.82)}.pill.accent{color:var(--cyan);border-color:rgba(94,242,255,.4)}
 main{max-width:var(--max);margin:auto;padding:0 20px 80px}.legend{align-items:center;background:rgba(17,21,34,.7);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:24px}.legend strong{font-size:.76rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
@@ -45,7 +59,7 @@ section{margin:60px 0}.section-head{display:grid;grid-template-columns:auto 1fr;
 .resource.is-complete{filter:grayscale(1);background:linear-gradient(150deg,#292b30,#1b1d21);border-color:#686d76;box-shadow:0 10px 30px rgba(0,0,0,.25)}.resource.is-complete::before{background:#858b94}.resource.is-complete h3 a,.resource.is-complete .focus strong{color:#e0e2e5}.resource.is-complete p{color:#bdc0c6}.resource.is-complete .byline{color:#aeb2ba}.resource.is-complete .tag{color:#d3d5d9;border-color:#777d86;background:#33363c}.resource.is-complete .completion-control{color:#e0e2e5;border-color:#858b94;background:#34373d}.resource.is-complete .completion-control input{accent-color:#aeb3bb}
 .glossary{columns:2;column-gap:22px}.term{break-inside:avoid;margin:0 0 10px;padding:12px 14px;background:var(--panel);border:1px solid var(--line);border-radius:12px}.term dt{font-weight:900;color:var(--yellow)}.term dd{margin:2px 0 0;color:var(--muted);font-size:.89rem}.hidden{display:none!important}.empty{display:none;text-align:center;color:var(--muted);padding:34px}.empty.show{display:block}
 footer{border-top:1px solid var(--line);max-width:var(--max);margin:auto;padding:28px 20px 68px;color:var(--muted);font-size:.87rem}.toplink{position:fixed;right:16px;bottom:16px;width:44px;height:44px;display:grid;place-items:center;border-radius:50%;background:var(--pink);color:#fff;text-decoration:none;font-weight:900;box-shadow:var(--shadow)}
-@media(max-width:650px){body{font-size:15px}.season-step{height:32px}.season-step.back{width:32px}.season-step.advance{min-width:92px}.queue-season-stepper{grid-column:1/-1;justify-self:end}.queue-head{display:block}.queue-time{text-align:left;margin-top:5px}.queue-item{grid-template-columns:34px minmax(0,1fr) auto!important}.queue-main{grid-column:2/-1;flex-wrap:wrap}.queue-runtime{grid-column:2;justify-self:start}.queue-actions{grid-column:3;justify-content:flex-end}.queue-season-stepper{order:2}.queue-action{min-width:40px;height:36px}.queue-add{width:34px;height:34px}.season-toggle{width:34px;height:32px}.episode-item label{grid-template-columns:24px minmax(0,1fr) auto}.topbar-inner{flex-wrap:wrap}.search{order:3;max-width:none;flex:1 0 100%}.progress-sync{flex:1 1 auto;min-width:0}.progress-status{max-width:100%;font-size:.72rem}.progress-status{padding:0 12px 7px}.topbar-inner{padding:8px 12px;gap:8px}.brand{display:none}.progress{font-size:.68rem;line-height:1.25}.search input{padding-block:8px}header{padding:42px 15px 22px}main{padding:0 14px 70px}.toc,.grid{grid-template-columns:1fr}.section-head{grid-template-columns:1fr;gap:6px}.num{justify-self:start}section{margin:46px 0}.resource{padding:16px}.completion-control{width:34px;height:32px}.completion-control input{width:18px;height:18px}.glossary{columns:1}h1{-webkit-text-stroke:0}.toplink{right:11px;bottom:11px}}
+@media(max-width:650px){body{font-size:15px}.season-step{height:32px}.season-step.back{width:32px}.season-step.advance{min-width:92px}.queue-season-stepper{grid-column:1/-1;justify-self:end}.queue-head{display:block}.queue-time{text-align:left;margin-top:5px}.queue-item{grid-template-columns:34px minmax(0,1fr) auto!important}.queue-main{grid-column:2/-1;flex-wrap:wrap}.queue-runtime{grid-column:2;justify-self:start}.queue-actions{grid-column:3;justify-content:flex-end}.queue-season-stepper{order:2}.queue-action{min-width:40px;height:36px}.queue-add{width:34px;height:34px}.season-toggle{width:34px;height:32px}.episode-item label{grid-template-columns:24px minmax(0,1fr) auto}.topbar-inner{flex-wrap:wrap}.search{order:3;max-width:none;flex:1 0 100%}.tool-button{min-height:40px;padding:7px 10px}.topbar-inner{padding:8px 12px;gap:8px}.brand{display:none}.progress{font-size:.68rem;line-height:1.25}.search input{padding-block:8px}header{padding:42px 15px 22px}main{padding:0 14px 70px}.toc,.grid{grid-template-columns:1fr}.section-head{grid-template-columns:1fr;gap:6px}.num{justify-self:start}section{margin:46px 0}.resource{padding:16px}.completion-control{width:34px;height:32px}.completion-control input{width:18px;height:18px}.glossary{columns:1}h1{-webkit-text-stroke:0}.toplink{right:11px;bottom:11px}}
 
 @media(forced-colors:active){.queue-action,.queue-handle,.season-step,.queue-add{forced-color-adjust:auto;border:1px solid ButtonText}.queue-item.completing{outline:2px solid Highlight}.queue-tooltip{border:1px solid CanvasText}}
 @media print{.topbar,.toplink,.completion-control,.queue-panel,.queue-add,.season-stepper,.queue-tooltip{display:none!important}body{background:#fff;color:#111}header,main,footer{max-width:none}.toc{display:none}.resource,.term{box-shadow:none;background:#fff;color:#111;break-inside:avoid}.resource h3 a,h2,h3{color:#111}.resource p,.lead,.dek,.term dd{color:#333}.resource.is-complete{filter:grayscale(1);background:#eee;border-color:#777}.resource.is-complete .controls::after{content:"✓ Complete";color:#333;font-size:.75rem;font-weight:800}.tag.media-badge,.tag.date-badge,.tag.duration-badge,.tag.signal{background:transparent!important;color:#222!important;border-color:#777!important}a{color:#004c68}}
@@ -72,9 +86,10 @@ a{color:var(--cyan)}a:hover{color:#fff;text-shadow:0 0 12px rgba(89,243,255,.48)
 .topbar{border-bottom:1px solid rgba(89,243,255,.42);background:rgba(5,7,11,.96);box-shadow:0 5px 24px rgba(0,0,0,.44),inset 0 -1px rgba(255,78,156,.12);backdrop-filter:none}
 .topbar-inner{padding-block:9px}.brand{color:var(--cyan);font:900 .78rem/1 var(--display);letter-spacing:.17em}.brand b{color:var(--pink);text-shadow:0 0 12px rgba(255,78,156,.38)}
 .progress{display:inline-flex;align-items:center;gap:5px;padding:6px 9px;border-left:2px solid var(--green);background:#0b1416;color:#c8d4dc;font:700 .73rem/1 var(--display);letter-spacing:.04em}.progress strong{color:var(--green);font-size:.86rem}
-.progress-status{font:700 .75rem/1.35 var(--display);letter-spacing:.02em}.progress-status[data-state="success"]{color:#88ffc1}.progress-status[data-state="warning"]{color:#efff92}.progress-status[data-state="error"]{color:#ffadb5}
+.tool-button{min-height:34px;border-radius:2px;border-color:#31425a;background:#0b111a;color:#dce6ef;font:800 .68rem/1 var(--display);letter-spacing:.055em;text-transform:uppercase;clip-path:polygon(0 0,calc(100% - 7px) 0,100% 7px,100% 100%,0 100%)}.tool-button:hover{border-color:var(--cyan);background:#10202a;color:#fff;box-shadow:inset 3px 0 var(--cyan),0 0 16px rgba(89,243,255,.12)}
+
 .search{max-width:410px}.search input{height:36px;border-radius:2px;border-color:#34445b;background:#080c12;color:#f2f7fb;padding-left:39px;font:650 .78rem/1 var(--display);letter-spacing:.02em;clip-path:polygon(0 0,calc(100% - 9px) 0,100% 9px,100% 100%,0 100%)}.search input::placeholder{color:#7f8d9e}.search input:focus{border-color:var(--cyan);box-shadow:inset 3px 0 var(--cyan),0 0 18px rgba(89,243,255,.13)}.search span{color:var(--cyan);top:8px;font-size:1rem}
-header{position:relative;padding-top:78px;padding-bottom:42px}header::before{content:"CP//REF-ATLAS   69 NODES   CHRONOLOGICAL INDEX";display:block;width:max-content;max-width:100%;overflow:hidden;margin-bottom:18px;padding:5px 8px;border-left:3px solid var(--pink);background:#100b13;color:#ff94c4;font:800 .68rem/1 var(--display);letter-spacing:.12em;white-space:nowrap}header::after{content:"";position:absolute;right:20px;top:36px;width:min(32vw,360px);height:1px;background:linear-gradient(90deg,transparent,var(--pink));box-shadow:0 6px var(--cyan)}
+header{position:relative;padding-top:78px;padding-bottom:42px}header::before{content:"CP//REF-ATLAS   70 NODES   CHRONOLOGICAL INDEX";display:block;width:max-content;max-width:100%;overflow:hidden;margin-bottom:18px;padding:5px 8px;border-left:3px solid var(--pink);background:#100b13;color:#ff94c4;font:800 .68rem/1 var(--display);letter-spacing:.12em;white-space:nowrap}header::after{content:"";position:absolute;right:20px;top:36px;width:min(32vw,360px);height:1px;background:linear-gradient(90deg,transparent,var(--pink));box-shadow:0 6px var(--cyan)}
 .eyebrow{color:var(--yellow);font-family:var(--display);font-size:.7rem;letter-spacing:.2em;text-shadow:0 0 13px rgba(232,255,98,.2)}
 h1{font-family:var(--display);font-size:clamp(2.4rem,6vw,5.5rem);letter-spacing:-.075em;line-height:.91;text-transform:uppercase;text-wrap:balance}h1 em{color:var(--cyan);-webkit-text-stroke:0;text-shadow:0 0 22px rgba(89,243,255,.22);letter-spacing:-.08em}.dek{max-width:850px;color:#bcc8d4;line-height:1.55;border-left:1px solid #34445b;padding-left:16px}.meta{gap:6px}.pill{border-radius:2px;padding:5px 8px;background:#0c121b;border-color:#34435a;color:#bac5d2;font:750 .66rem/1 var(--display);letter-spacing:.05em;text-transform:uppercase}.pill.accent{color:var(--cyan);border-color:rgba(89,243,255,.55);box-shadow:inset 2px 0 var(--cyan)}
 main{position:relative}.legend{position:relative;border-radius:2px;border-color:#2e3b50;background:linear-gradient(90deg,#0a0f17,#0e131d);padding:12px 14px;box-shadow:inset 3px 0 var(--pink)}.legend::after{content:"MEDIA TAXONOMY";position:absolute;right:9px;top:-7px;padding:2px 5px;background:var(--bg);color:#6f8298;font:700 .58rem/1 var(--display);letter-spacing:.12em}.legend strong{color:#d7e0e9;font-family:var(--display);font-size:.66rem}
@@ -91,7 +106,7 @@ section{margin:68px 0}.section-head{position:relative;align-items:center;margin-
 .queue-tooltip{border-radius:2px;border-color:#4c6682;background:#080d14;color:#e8eef4;box-shadow:0 17px 46px rgba(0,0,0,.58),inset 3px 0 var(--pink);font-family:var(--display);font-size:.76rem}
 .glossary{column-gap:14px}.term{border-radius:2px;border-color:#29374a;background:#0a1018;box-shadow:inset 2px 0 #364a61}.term dt{font-family:var(--display);color:var(--yellow);font-size:.8rem;text-transform:uppercase;letter-spacing:.04em}.term dd{color:#acb9c7}
 .empty.show{border:1px dashed #35465a;background:#0a1018;color:#9dacbc;font-family:var(--display)}footer{border-color:#263448;color:#8d9bac;font-family:var(--display)}.toplink{border-radius:1px;background:var(--pink);color:#08080b;box-shadow:0 0 18px rgba(255,78,156,.22);clip-path:polygon(0 0,calc(100% - 9px) 0,100% 9px,100% 100%,0 100%)}
-@media(max-width:650px){body::before{background-size:30px 30px}.queue-add{width:36px;height:36px}.topbar{position:sticky}.brand{display:block;font-size:.65rem}.topbar-inner{padding-inline:10px}.progress{padding:5px 7px}.progress-sync{gap:6px}.progress-status{padding:4px 6px}.search input{height:40px}.queue-panel{padding:14px}.queue-item{padding:8px}.queue-main{gap:5px}.queue-title-link{font-size:.78rem}header::before{font-size:.58rem}header::after{display:none}h1{font-size:clamp(2.25rem,13vw,3.6rem)}.toc a{min-height:46px}.resource:hover{transform:none}}
+@media(max-width:650px){body::before{background-size:30px 30px}.queue-add{width:36px;height:36px}.topbar{position:sticky}.brand{display:block;font-size:.65rem}.topbar-inner{padding-inline:10px}.progress{padding:5px 7px}.tool-button{font-size:.62rem}.search input{height:40px}.queue-panel{padding:14px}.queue-item{padding:8px}.queue-main{gap:5px}.queue-title-link{font-size:.78rem}header::before{font-size:.58rem}header::after{display:none}h1{font-size:clamp(2.25rem,13vw,3.6rem)}.toc a{min-height:46px}.resource:hover{transform:none}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.resource,.toc a::after,.season-stepper .season-step,.queue-item{transition:none!important}.resource:hover{transform:none}}
 @media(forced-colors:active){body::before,body::after,.resource::after,header::after{display:none}.resource,.queue-panel,.queue-item,.toc a,.term{clip-path:none}.resource::before{box-shadow:none}}
 @media print{body::before,body::after,header::before,header::after,.resource::after,.legend::after{display:none!important}.resource,.term{clip-path:none!important}.resource{border:1px solid #999!important}.section-head{border-color:#aaa}.section-head::after{background:#333}.pill,.tag{clip-path:none!important}}
@@ -112,15 +127,15 @@ section{margin:68px 0}.section-head{position:relative;align-items:center;margin-
 
 /* Readability pass — proportions remain compact, closer to the pre-redesign edition. */
 body{font-size:16.5px;line-height:1.64}
-.progress{font-size:.77rem}.progress-status{font-size:.81rem;line-height:1.42}
+.progress{font-size:.77rem}.tool-button{font-size:.72rem}
 .search input{font-size:.83rem}.eyebrow{font-size:.74rem}.dek{font-size:clamp(1.09rem,2.15vw,1.4rem)}
 .pill,.tag{font-size:.7rem}.legend strong{font-size:.7rem}.toc a{font-size:.82rem;line-height:1.32}.toc span{font-size:.72rem}
 h2{font-size:clamp(1.68rem,3.5vw,2.78rem);line-height:1.08}.lead{font-size:.98rem;line-height:1.52}.num{font-size:.87rem}
 .resource h3{font-size:1.05rem;line-height:1.34}.byline{font-size:.76rem;line-height:1.4}.resource p{font-size:.94rem;line-height:1.6}.focus strong{font-size:.79rem}
 .queue-head h2{font-size:1.35rem}.section-code{font-size:.64rem}.queue-status{font-size:.66rem}.queue-time{font-size:.9rem}.queue-help,.queue-empty{font-size:.79rem;line-height:1.45}.queue-title-link{font-size:.86rem;line-height:1.32}.queue-runtime{font-size:.81rem}.queue-action{font-size:.86rem}.season-step{font-size:.77rem}.queue-tooltip{font-size:.82rem;line-height:1.5}
 .term dt{font-size:.85rem}.term dd{font-size:.92rem;line-height:1.5}footer{font-size:.9rem;line-height:1.55}
-@media(max-width:650px){body{font-size:15.5px}.progress{font-size:.72rem}.progress-status{font-size:.76rem}.search input{font-size:.86rem}.eyebrow{font-size:.69rem}.pill,.tag{font-size:.68rem}.toc a{font-size:.8rem}.resource h3{font-size:1.03rem}.resource p{font-size:.94rem}.byline{font-size:.75rem}.queue-head h2{font-size:1.28rem}.queue-title-link{font-size:.82rem}.queue-runtime{font-size:.79rem}.queue-help{font-size:.75rem}.season-step{font-size:.75rem}.queue-tooltip{font-size:.8rem}}
-@media(max-width:360px){body{font-size:15px}.progress{font-size:.68rem}.toc a{font-size:.77rem}.tag{font-size:.65rem}.queue-title-link{font-size:.8rem}.queue-time{font-size:.84rem}}
+@media(max-width:650px){body{font-size:15.5px}.progress{font-size:.72rem}.tool-button{font-size:.67rem}.search input{font-size:.86rem}.eyebrow{font-size:.69rem}.pill,.tag{font-size:.68rem}.toc a{font-size:.8rem}.resource h3{font-size:1.03rem}.resource p{font-size:.94rem}.byline{font-size:.75rem}.queue-head h2{font-size:1.28rem}.queue-title-link{font-size:.82rem}.queue-runtime{font-size:.79rem}.queue-help{font-size:.75rem}.season-step{font-size:.75rem}.queue-tooltip{font-size:.8rem}}
+@media(max-width:360px){body{font-size:15px}.tool-button{font-size:.63rem;padding-inline:8px}.progress{font-size:.68rem}.toc a{font-size:.77rem}.tag{font-size:.65rem}.queue-title-link{font-size:.8rem}.queue-time{font-size:.84rem}}
 
 
 /* Live queue insertion feedback */
@@ -134,12 +149,30 @@ h2{font-size:clamp(1.68rem,3.5vw,2.78rem);line-height:1.08}.lead{font-size:.98re
 @keyframes card-complete-yellow{0%{box-shadow:var(--shadow)}38%{box-shadow:0 0 0 2px rgba(232,255,98,.2),0 14px 36px rgba(0,0,0,.42)}100%{box-shadow:var(--shadow)}}@keyframes queue-complete-yellow{0%{transform:scale(1)}45%{transform:scale(1.012)}100%{transform:scale(1)}}@keyframes circuit-sweep{0%{transform:translateX(-100%);opacity:0}24%{opacity:1}100%{transform:translateX(100%);opacity:0}}
 @media(prefers-reduced-motion:reduce){.resource.completion-flash,.resource.completion-flash::after,.queue-item.completing,.queue-item.completing::after{animation:none!important;transform:none!important}.resource.completion-flash{outline:2px solid var(--yellow);outline-offset:-2px}.resource.completion-flash::after{background:rgba(232,255,98,.07)}}
 
+
+/* Completion-state filter: cycles All → Watched → Unwatched. */
+.completion-filter{margin-left:auto;min-width:96px;position:relative;border-color:#3b526b;color:var(--cyan)}
+.completion-filter[data-filter="watched"]{color:var(--green);border-color:rgba(101,247,170,.58);background:#0b1c15}
+.completion-filter[data-filter="unwatched"]{color:var(--yellow);border-color:rgba(232,255,98,.58);background:#1a1c09}
+.search{margin-left:0}
+@media(max-width:650px){.completion-filter{order:2;margin-left:0;min-width:94px;min-height:40px}.search{order:3}}
+@media print{.completion-filter{display:none!important}}
+
+/* Canonical inline Supabase status: persistent, compact, and adjacent to completion progress. */
+.sync-status{display:inline-flex;align-items:center;flex:0 0 auto;min-height:26px;padding:4px 8px;border-left:2px solid currentColor;background:#111407;color:var(--yellow);font:800 .7rem/1 var(--display);letter-spacing:.035em;white-space:nowrap}
+.sync-status[data-state="syncing"],.sync-status[data-state="warning"]{color:var(--yellow);background:#171907}
+.sync-status[data-state="saved"]{color:var(--green);background:#07150f}
+.sync-status[data-state="error"]{color:#ffadb5;background:#180a0d}
+@media(max-width:650px){.sync-status{order:0;min-height:28px;padding:4px 7px;font-size:.66rem}.progress{order:0}.completion-filter{order:2}.search{order:3}}
+@media(max-width:360px){.sync-status{font-size:.63rem;padding-inline:6px}}
+@media print{.sync-status{display:none!important}}
+
 </style>
 </head>
 <body id="top">
 <a class="skip" href="#content">Skip to content</a>
-<nav aria-label="Document tools" class="topbar"><div class="topbar-inner"><div class="brand">Reference <b>Atlas</b></div><div class="progress-sync"><div aria-live="polite" class="progress" id="progress"><strong>0</strong> / 69 complete</div><div aria-atomic="true" aria-live="polite" class="progress-status" id="progress-status" role="status"></div></div><label class="search"><span aria-hidden="true">⌕</span><input aria-label="Filter the curated reference atlas" id="search" placeholder="Filter titles, creators, ideas…" type="search"/></label></div><div aria-atomic="true" aria-live="polite" class="sr-only" id="announcer" role="status"></div></nav>
-<header><span class="eyebrow">Concise curated guide • focused edition</span><h1>Cyberpunk RPG<br/><em>Reference Atlas</em></h1><p class="dek">A focused guide to punk, cyberpunk, systemic and non-linear cinematics, interactive narrative, city systems and <i>Cyberpunk 2077</i>—a concise collection of short-form material, selected excerpts, targeted scenes and documentaries.</p><div class="meta"><span class="pill accent">15 topic sections</span><span class="pill">69 curated references</span><span class="pill">Documentaries included</span><span class="pill">Focused short-form selections</span></div></header>
+<nav aria-label="Document tools" class="topbar"><div class="topbar-inner"><div class="brand">Reference <b>Atlas</b></div><div class="progress" id="progress"><strong>0</strong> / 70 complete</div><span aria-atomic="true" aria-live="polite" class="sync-status" data-state="syncing" id="sync-status" role="status">Connecting...</span><button aria-label="Completion filter: All. Activate to show Watched references." class="tool-button completion-filter" data-filter="all" id="completion-filter" title="Show all references; press to show watched references" type="button">All</button><label class="search"><span aria-hidden="true">⌕</span><input aria-label="Filter the curated reference atlas" id="search" placeholder="Filter titles, creators, ideas…" type="search"/></label></div><span aria-atomic="true" aria-live="polite" class="sr-only" id="status-announcer" role="status"></span></nav>
+<header><span class="eyebrow">Concise curated guide • focused edition</span><h1>Cyberpunk RPG<br/><em>Reference Atlas</em></h1><p class="dek">A focused guide to punk, cyberpunk, systemic and non-linear cinematics, interactive narrative, city systems and <i>Cyberpunk 2077</i>—a concise collection of short-form material, selected excerpts, targeted scenes and documentaries.</p><div class="meta"><span class="pill accent">15 topic sections</span><span class="pill">70 curated references</span><span class="pill">Documentaries included</span><span class="pill">Focused short-form selections</span></div></header>
 <main id="content">
 <section aria-labelledby="queue-title" class="queue-panel" id="queue-panel"><div class="queue-head"><h2 id="queue-title"><span class="section-code">// ACTIVE STACK</span>Reference Queue</h2><div class="queue-summary"><span aria-label="Queue status: live" class="queue-status">QUEUE//LIVE</span><div aria-live="polite" class="queue-time" id="queue-time">Runtime: 0 min</div></div></div><p class="queue-help">Add references with +. Drag the grip to reorder. With a keyboard, focus a queue item and use Alt+↑ or Alt+↓.</p><ol aria-label="Queued references" class="queue-list" id="queue-list"></ol><p class="queue-empty" id="queue-empty">Your queue is empty.</p></section>
 <div aria-label="Media-type color key" class="legend"><strong>Media key:</strong><span class="tag media-badge media-book">Book</span><span class="tag media-badge media-comic">Comic</span><span class="tag media-badge media-movie">Movie / Documentary</span><span class="tag media-badge media-video-essay">Video Essay</span><span class="tag media-badge media-developer-talk">Developer Talk</span><span class="tag media-badge media-game">Game</span><span class="tag media-badge media-paper">Paper</span><span class="tag media-badge media-article">Article / Essay</span><span class="tag media-badge media-documentation">Documentation / Tool</span><span class="tag media-badge media-talk">Lecture / Talk</span></div>
@@ -361,6 +394,12 @@ h2{font-size:clamp(1.68rem,3.5vw,2.78rem);line-height:1.08}.lead{font-size:.98re
 <p>The most complete case study of rule-assisted staging, acting, editing, framing and lighting.</p>
 <p class="focus"><strong>Focus:</strong> Track inputs, generated decisions, validation, fallback behavior and manual override instead of watching every implementation detail.</p>
 <div class="controls"><div class="tags"><span class="tag media-badge media-developer-talk">Developer Talk</span><span class="tag date-badge" title="Original publication, premiere, presentation, release, or initial posting date">GDC 2019</span><span class="tag duration-badge" title="Estimated commitment for the assigned selection">~40 min</span></div></div>
+</article><article class="resource media-developer-talk" data-duration-max="60" data-duration-min="60" data-original-date="2024-03-20" data-reference-id="gdc-1034181-cyberpunk-quest-editor">
+<h3><a href="https://gdcvault.com/play/1034181/Where-Story-and-Tech-Meet" rel="noopener" target="_blank">Where Story and Tech Meet: Cyberpunk’s Quest Editor in Action</a></h3>
+<div class="byline">Sarah Gruemmer / CD PROJEKT RED • GDC 2024</div>
+<p>A primary walkthrough of REDengine 4’s narrative systems, showing how quest-design ambitions shaped the visual scripting tools used to build Cyberpunk 2077.</p>
+<p class="focus"><strong>Focus:</strong> Compare the strengths and tradeoffs of complex visual scripting across engine iterations, then extract principles for a narrative toolset that keeps designers expressive without obscuring technical constraints.</p>
+<div class="controls"><div class="tags"><span class="tag media-badge media-developer-talk">Developer Talk</span><span class="tag date-badge" title="Original publication, premiere, presentation, release, or initial posting date">20 Mar 2024</span><span class="tag duration-badge" title="Estimated full-session runtime">~60 min</span></div></div>
 </article></div>
 </section>
 <section class="topic" data-searchable="" id="topic-9">
@@ -405,24 +444,24 @@ h2{font-size:clamp(1.68rem,3.5vw,2.78rem);line-height:1.08}.lead{font-size:.98re
 <p>A compact demonstration of advance preparation, overlapping alliances, negotiation-to-combat continuity and multiple kinds of leverage.</p>
 <p class="focus"><strong>Focus:</strong> Watch two different outcomes rather than completing the game; compare entrances, state checks, combat transitions and aftermath.</p>
 <div class="controls"><div class="tags"><span class="tag media-badge media-game">Game Scene Study</span><span class="tag date-badge" title="Original publication, premiere, presentation, release, or initial posting date">10 Dec 2020</span><span class="tag duration-badge" title="Estimated commitment for the assigned selection">~75 min</span></div></div>
-</article><article class="resource media-developer-talk" data-duration-max="43" data-duration-min="43" data-original-date="2021-12-03" data-reference-id="yt-4cagVACQpf4">
-<h3><a href="https://www.youtube.com/watch?v=4cagVACQpf4" rel="noopener" target="_blank">Cyberpunk 2077 Devs Break Down First-Person Storytelling — selected timestamps</a></h3>
+</article><article class="resource media-developer-talk" data-duration-max="73" data-duration-min="73" data-original-date="2021-12-03" data-reference-id="yt-4cagVACQpf4">
+<h3><a href="https://www.youtube.com/watch?v=4cagVACQpf4" rel="noopener" target="_blank">Cyberpunk 2077 Devs Break Down First-Person Storytelling</a></h3>
 <div class="byline">Story Mode • 36K views • 1.4K likes</div>
 <p>The most accessible source on freedom tiers, attention, body presence, continuity cost, invisible choices and the player-as-actor principle.</p>
 <p class="focus"><strong>Focus:</strong> Prioritize 12:38–30:54 and 35:29–59:51 for player freedom, attention, body presence and long-take continuity.</p>
-<div class="controls"><div class="tags"><span class="tag media-badge media-developer-talk">Developer Interview</span><span class="tag date-badge" title="Original publication, premiere, presentation, release, or initial posting date">3 Dec 2021</span><span class="tag duration-badge" title="Estimated commitment for the assigned selection">~43 min</span></div></div>
-</article><article class="resource media-developer-talk" data-duration-max="53" data-duration-min="53" data-original-date="2024-03-19" data-reference-id="url-p9ru4n">
-<h3><a href="https://gdcvault.com/play/1034553/Game-Narrative-Summit-Cinematics-and" rel="noopener" target="_blank">Cinematics and Interactivity in Cyberpunk 2077: Two Sides of the Same Coin?</a></h3>
-<div class="byline">CD Projekt Red / GDC 2024</div>
-<p>Extends player-as-actor into hidden choices, small ripples and the argument that interactivity can strengthen cinematic intent.</p>
-<p class="focus"><strong>Focus:</strong> Look for low-cost recognition, environmental interaction and how scene direction recovers player attention.</p>
-<div class="controls"><div class="tags"><span class="tag media-badge media-developer-talk">Developer Talk</span><span class="tag date-badge" title="Original publication, premiere, presentation, release, or initial posting date">19 Mar 2024</span><span class="tag duration-badge" title="Estimated commitment for the assigned selection">~53 min</span></div></div>
+<div class="controls"><div class="tags"><span class="tag media-badge media-developer-talk">Developer Interview</span><span class="tag date-badge" title="Original publication, premiere, presentation, release, or initial posting date">3 Dec 2021</span><span class="tag duration-badge" title="Full video runtime: 1:13:03, rounded to the nearest minute">1 hr 13 min</span></div></div>
 </article><article class="resource media-game" data-duration-max="15" data-duration-min="15" data-original-date="2023-09-26" data-reference-id="yt-GbjjWpPFk7Q-35333">
 <h3><a href="https://youtu.be/GbjjWpPFk7Q?t=35333" rel="noopener" target="_blank">Cyberpunk 2077: Phantom Liberty Songbird's Memories Sequence</a></h3>
 <div class="byline">Cyberpunk 2077: Phantom Liberty</div>
 <p>A focused fifteen-minute selection from Songbird's memories sequence.</p>
 <p class="focus"><strong>Focus:</strong> Watch the linked sequence as a study of first-person staging, memory and player perspective.</p>
 <div class="controls"><div class="tags"><span class="tag media-badge media-game">Game Scene Study</span><span class="tag date-badge" title="Original publication, premiere, presentation, release, or initial posting date">26 Sep 2023</span><span class="tag duration-badge" title="Estimated commitment for the assigned selection">~15 min</span></div></div>
+</article><article class="resource media-developer-talk" data-duration-max="53" data-duration-min="53" data-original-date="2024-03-19" data-reference-id="url-p9ru4n">
+<h3><a href="https://gdcvault.com/play/1034553/Game-Narrative-Summit-Cinematics-and" rel="noopener" target="_blank">Cinematics and Interactivity in Cyberpunk 2077: Two Sides of the Same Coin?</a></h3>
+<div class="byline">CD Projekt Red / GDC 2024</div>
+<p>Extends player-as-actor into hidden choices, small ripples and the argument that interactivity can strengthen cinematic intent.</p>
+<p class="focus"><strong>Focus:</strong> Look for low-cost recognition, environmental interaction and how scene direction recovers player attention.</p>
+<div class="controls"><div class="tags"><span class="tag media-badge media-developer-talk">Developer Talk</span><span class="tag date-badge" title="Original publication, premiere, presentation, release, or initial posting date">19 Mar 2024</span><span class="tag duration-badge" title="Estimated commitment for the assigned selection">~53 min</span></div></div>
 </article></div>
 </section>
 <section class="topic" data-searchable="" id="topic-11">
@@ -522,7 +561,7 @@ h2{font-size:clamp(1.68rem,3.5vw,2.78rem);line-height:1.08}.lead{font-size:.98re
 <div class="byline">Sam Bram • 408K views • 6.7K likes</div>
 <p>A complete account of the expansion’s story, major branches, consequences and endings.</p>
 <p class="focus"><strong>Focus:</strong> Follow the full narrative to compare visible consequence, recognition and reconvergence across Phantom Liberty’s major branch paths.</p>
-<div class="controls"><div class="tags"><span class="tag media-badge media-video-essay">Video Essay</span><span class="tag date-badge" title="Original publication, premiere, presentation, release, or initial posting date">24 Nov 2024</span><span class="tag duration-badge" title="Full runtime">93 min</span></div></div>
+<div class="controls"><div class="tags"><span class="tag media-badge media-video-essay">Video Essay</span><span class="tag date-badge" title="Original publication, premiere, presentation, release, or initial posting date">24 Nov 2024</span><span class="tag duration-badge" title="Estimated commitment for the assigned selection">93 min</span></div></div>
 </article><article class="resource media-movie season-resource" data-duration-max="289" data-duration-min="289" data-episode-count="10" data-episode-ids='["s2e1","s2e2","s2e3","s2e4","s2e5","s2e6","s2e7","s2e8","s2e9","s2e10"]' data-episode-runtimes="[29,28,29,29,27,29,29,28,30,31]" data-original-date="2026-10-20" data-reference-id="series-edgerunners-s2" data-season="series-edgerunners-s2"><h3><a href="https://www.netflix.com/title/81744226" rel="noopener" target="_blank">Cyberpunk: Edgerunners — Season 2</a></h3><div class="byline">CD PROJEKT RED &amp; TRIGGER • Netflix</div><p>The second 10-episode standalone story returns to Night City with a new crew and a revenge-and-redemption narrative centered on spectacle, legacy, family and the stories people project onto one another.</p><p class="focus"><strong>Focus:</strong> Compare its new crew and cinematic perspective with Season 1; watch how the series reuses Night City’s systems while changing the human lens through which they are understood.</p><div class="controls"><div class="tags"><span class="tag media-badge media-movie">Anime Season</span><span class="tag date-badge" title="Original Netflix release date">20 Oct 2026</span><span class="tag duration-badge" title="Total of verified episode runtimes">4 hr 49 min</span></div></div></article></div>
 </section>
 <section data-searchable="" id="glossary"><div class="section-head"><span class="num">A–Z</span><div><h2>Fluency Vocabulary</h2><p class="lead">A compact language for discussing the collection precisely.</p></div></div><dl class="glossary"><div class="term"><dt>Agency</dt><dd>Meaningful action whose results the player can perceive.</dd></div><div class="term"><dt>Authored glue</dt><dd>Connective content that preserves continuity between variably ordered scenes.</dd></div><div class="term"><dt>Combinatorial explosion</dt><dd>Production and test cost growing faster than the number of choices.</dd></div><div class="term"><dt>Consequence</dt><dd>A state change that affects later possibilities or outcomes.</dd></div><div class="term"><dt>Coverage</dt><dd>The set of shots needed to present and edit a scene.</dd></div><div class="term"><dt>Drama manager</dt><dd>A system that selects or schedules events to regulate dramatic form, pacing or intensity.</dd></div><div class="term"><dt>Emergent narrative</dt><dd>A story interpreted from interacting simulation systems.</dd></div><div class="term"><dt>Fail-forward</dt><dd>Failure changes the story instead of forcing repetition.</dd></div><div class="term"><dt>Foldback</dt><dd>Branches produce local variation before returning to shared content.</dd></div><div class="term"><dt>Micro-reactivity</dt><dd>Small acknowledgements that make a system feel attentive.</dd></div><div class="term"><dt>Narrative debt</dt><dd>Future content required to make an earlier choice coherent or visible.</dd></div><div class="term"><dt>Player-as-actor</dt><dd>The player retains expressive participation inside cinematic staging.</dd></div><div class="term"><dt>Procedural staging</dt><dd>Rule-based placement, movement and behavior of performers.</dd></div><div class="term"><dt>Recognition vs. consequence</dt><dd>Acknowledgement of an action versus a material change to the possibility space.</dd></div><div class="term"><dt>Signal-to-noise</dt><dd>The relation between essential narrative information and competing stimuli.</dd></div><div class="term"><dt>Storylet</dt><dd>A modular narrative unit selected when its preconditions are met.</dd></div></dl></section>
@@ -544,7 +583,9 @@ const SUPABASE_TABLE='shared_tracker_state';
 const supabaseClient=window.supabase?.createClient
   ? window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:false,autoRefreshToken:false}})
   : null;
-let remoteReady=false,remoteApplying=false,remoteSaveTimer=null,lastRemoteStateJSON='';
+let remoteReady=false,remoteApplying=false,remoteSaveTimer=null,remoteSaveVersion=0,lastRemoteStateJSON='';
+const ATLAS_VERSION='2026.11-canonical-supabase-master.1';
+const CANONICAL_REFERENCE_IDS=Object.freeze(["url-1tlvh43","url-1bk9eoa","yt-qIa_jVDRYg4","yt-6lyoAczdMSM","url-bb3ax","url-17kohht","yt-Cqqp_ohh2GY","url-1wkogrv","yt-sttm8Q9rOdQ","yt-0VoX3vr6CCM","yt-Oy27RiykPKI","url-lpywbr","url-1ln1s2d","yt-M8e8xtvElpQ","yt-3k6UkBT_VX0","url-eltccf","url-brtrd7","yt-rY8RkET3KC0","yt-7elkjOb68Fk","yt-VFaqguc_uNk","yt-SnpAAX9CkIc","yt-OrmyLaLCaIo","yt-Lm_AzK27mZY","yt-LR4OxNfzTvU","yt-o02uJ-ktCuk","yt-POv1cOX8xUM","yt-6HZuSzlN2eI","yt-fpjHZc9bbFk","url-vm8d7q","yt-chf3REzAjgI","yt-DFM5zbekZ7c","gdc-1034181-cyberpunk-quest-editor","yt-doaQC-S8de8","url-181gxqk","url-3st0bd","yt-MdmY9Mt-vz8","yt-uFIxiz0jwRE","url-pmtwpw","yt-4cagVACQpf4","yt-GbjjWpPFk7Q-35333","url-p9ru4n","url-ky0a8e","yt-J-lvFEJtJS4","yt-d0FCMi6eVJk","yt-8hNNQ17a-So","yt-GCf_CTvV_Q4","gdc-1027889-fpp-player-actor","yt-exqPwGIxryI","yt-OHOdBtuuYm0","yt-R_vr-J246GA","yt-GRldd9lfFfk","yt-N-eEFAYbjzE","yt-kG1ZdL_ggGI","yt-uf-5_wtj47s","yt-Dbl10vKmQWE","yt-TagiLP0bJiM","url-cdpr-language-film-interactive-storytelling","yt-MxFhFhEIEu8","yt-p0QWc9tNJS4","yt-wj-2vbiyHnI","yt-bwdYL0KFA_U","url-gsgtnf","yt-tffX3VljTtI","yt-kXLxaKrcFZ0","yt-oCvcIvYngb8","yt-KczJNtexinY","series-edgerunners-s1","yt-c9_SNSuI5e0","yt-H9GpvqOWs6Q","series-edgerunners-s2"]);
 const cards=[...document.querySelectorAll('article.resource')];
 let completed=new Set(),seasonProgress={},queue=[];
 const memoryStorage=new Map();
@@ -575,34 +616,38 @@ const normalizeSharedState=raw=>{
 };
 const hasSavedProgress=state=>state.completed.length>0||Object.values(state.seasonProgress).some(x=>Number.isInteger(x)&&x>0)||state.queue.length>0;
 function scheduleRemoteSave(){
- if(!supabaseClient||!remoteReady||remoteApplying)return;
+ if(remoteApplying)return;
+ if(!supabaseClient){setSyncStatus('Offline.','error','Supabase is unavailable. Changes remain in this browser.');return}
+ if(!remoteReady)return;
  clearTimeout(remoteSaveTimer);
- report('Syncing...','warning',0,true);
+ const version=++remoteSaveVersion;
+ setSyncStatus('Syncing...','syncing','Saving shared progress to Supabase.');
  remoteSaveTimer=setTimeout(async()=>{
   remoteSaveTimer=null;
   const state=sharedStateSnapshot(),serialized=JSON.stringify(state);
-  if(serialized===lastRemoteStateJSON){report('Saved.','success',1800,true);return}
+  if(serialized===lastRemoteStateJSON){if(version===remoteSaveVersion)setSyncStatus('Saved.','saved','Shared progress is up to date.');return}
   try{
    const {data,error}=await supabaseClient.from(SUPABASE_TABLE).update({state,updated_at:new Date().toISOString()}).eq('id','global').select('id').maybeSingle();
    if(error)throw error;
    if(!data)throw new Error('The shared tracker row was not found or the database denied the update.');
    lastRemoteStateJSON=serialized;
-   report('Saved.','success',2200,true);
+   if(version===remoteSaveVersion)setSyncStatus('Saved.','saved','Shared progress saved to Supabase.');
+   announce('Shared progress saved.');
   }catch(error){
    console.error('Supabase save failed:',error);
-   report(`Cloud sync failed: ${error.message||'Unknown database error'}. Your changes remain in this browser; check the Supabase table and policies.`,'error');
+   if(version===remoteSaveVersion)setSyncStatus('Save failed.','error',`Cloud sync failed: ${error.message||'Unknown database error'}. Changes remain in this browser.`);
   }
  },350);
 }
 const save=()=>{
  const ok=[safeStorage.set(STORAGE_KEY,JSON.stringify([...completed])),safeStorage.set(SEASON_STORAGE_KEY,JSON.stringify(seasonProgress)),safeStorage.set(QUEUE_STORAGE_KEY,JSON.stringify(queue))].every(Boolean);
- if(!ok&&status&&!remoteReady)report('Local browser storage is blocked. Cloud sync will still work when connected.','warning');
+ if(!ok&&!remoteReady)setSyncStatus('Local blocked.','warning','Local browser storage is blocked. Cloud sync will still work when connected.');
  scheduleRemoteSave();
  return ok;
 };
-const meter=document.getElementById('progress'),status=document.getElementById('progress-status'),announcer=document.getElementById('announcer');let statusDismissTimer=null;
-const report=(message,state='success',dismissAfter=0,brief=false)=>{clearTimeout(statusDismissTimer);status.textContent=message;status.dataset.state=state;if(brief)status.dataset.brief='true';else status.removeAttribute('data-brief');if(dismissAfter>0)statusDismissTimer=setTimeout(()=>{status.textContent='';status.removeAttribute('data-state');status.removeAttribute('data-brief')},dismissAfter)};
+const meter=document.getElementById('progress'),syncStatus=document.getElementById('sync-status'),announcer=document.getElementById('status-announcer');
 const announce=message=>{announcer.textContent='';requestAnimationFrame(()=>{announcer.textContent=message})};
+const setSyncStatus=(message,state='saved',detail='')=>{syncStatus.textContent=message;syncStatus.dataset.state=state;syncStatus.title=detail||message;syncStatus.setAttribute('aria-label',detail?`${message} ${detail}`:message);if(detail&&(state==='error'||state==='warning'))announce(detail)};
 const updateMeter=()=>{const done=cards.filter(c=>c.classList.contains('is-complete')).length;meter.innerHTML=`<strong>${done}</strong> / ${cards.length} complete`};
 function applySharedState(raw){
  const state=normalizeSharedState(raw);
@@ -628,15 +673,16 @@ function applySharedState(raw){
   save();
   updateMeter();
   renderQueue();
+  applyFilters();
  }finally{remoteApplying=false}
  lastRemoteStateJSON=JSON.stringify(sharedStateSnapshot());
 }
 async function initializeSharedTracker(){
  if(!supabaseClient){
-  report('The Supabase library did not load. This page is using local browser storage only. Check your internet connection or CDN access.','error');
+  setSyncStatus('Offline.','error','The Supabase library did not load. This page is using local browser storage only.');
   return;
  }
- report('Connecting to the shared reference tracker…','warning');
+ setSyncStatus('Connecting...','syncing','Connecting to the shared Supabase tracker.');
  try{
   const {data,error}=await supabaseClient.from(SUPABASE_TABLE).select('state,updated_at').eq('id','global').single();
   if(error)throw error;
@@ -645,21 +691,21 @@ async function initializeSharedTracker(){
   if(!hasRemoteState){
    const localState=sharedStateSnapshot();
    if(hasSavedProgress(localState)){
+    setSyncStatus('Syncing...','syncing','Copying existing local progress into Supabase.');
     const {data:seeded,error:seedError}=await supabaseClient.from(SUPABASE_TABLE).update({state:localState,updated_at:new Date().toISOString()}).eq('id','global').select('id').maybeSingle();
     if(seedError)throw seedError;
-    if(!seeded)throw new Error('The shared tracker row was not found while importing this browser’s existing progress.');
+    if(!seeded)throw new Error('The shared tracker row was not found while copying this browser’s existing progress.');
     applySharedState(localState);
-    report('Connected. Existing progress from this browser has been copied into the shared tracker.','success');
+    announce('Existing local progress copied to the shared tracker.');
    }else{
     applySharedState({});
-    report('Connected to the shared tracker. Changes will sync for everyone.','success');
    }
   }else{
    applySharedState(remoteState);
-   report('Connected. Shared progress has been loaded from Supabase.','success');
   }
   remoteReady=true;
   lastRemoteStateJSON=JSON.stringify(sharedStateSnapshot());
+  setSyncStatus('Saved.','saved','Connected to Supabase. Shared progress is up to date.');
   supabaseClient.channel('cyberpunk-atlas-shared-tracker')
    .on('postgres_changes',{event:'UPDATE',schema:'public',table:SUPABASE_TABLE,filter:'id=eq.global'},payload=>{
     if(!remoteReady||remoteApplying)return;
@@ -672,16 +718,17 @@ async function initializeSharedTracker(){
      return;
     }
     applySharedState(incoming);
-    report('Shared progress updated by another visitor.','success',2000);
+    setSyncStatus('Saved.','saved','Shared progress is current.');
+    announce('Shared progress updated by another visitor.');
    })
    .subscribe(channelStatus=>{
-    if(channelStatus==='SUBSCRIBED')report('Live sync is active. Everyone is viewing the shared tracker.','success',2600);
-    else if(channelStatus==='CHANNEL_ERROR'||channelStatus==='TIMED_OUT')report('Database is connected, but live updates could not be established. Refresh to retry.','warning');
+    if(channelStatus==='SUBSCRIBED'){setSyncStatus('Saved.','saved','Live Supabase sync is active.');announce('Live shared progress sync is active.')}
+    else if(channelStatus==='CHANNEL_ERROR'||channelStatus==='TIMED_OUT')setSyncStatus('Live delayed.','warning','Database writes remain available, but live updates could not be established. Refresh to retry.');
    });
  }catch(error){
   console.error('Supabase initialization failed:',error);
   remoteReady=false;
-  report(`Could not connect to the shared tracker: ${error.message||'Unknown error'}. Local progress remains available. Check your Supabase table, API permissions and RLS policies.`,'error');
+  setSyncStatus('Offline.','error',`Could not connect to Supabase: ${error.message||'Unknown error'}. Local progress remains available.`);
  }
 }
 
@@ -692,12 +739,12 @@ read();
 const cardById=new Map();
 cards.forEach((card,index)=>{
  card.dataset.searchText=card.textContent.toLowerCase();const title=card.querySelector('h3')?.textContent.trim()||`Reference ${index+1}`;const href=card.querySelector('h3 a[href]')?.href||'';const topic=card.closest('section')?.id||'atlas';const key=card.dataset.referenceId||`ref-${hash(`${topic}|${title}|${href}`)}`;if(cardById.has(key))throw new Error(`Duplicate atlas reference ID: ${key}`);cardById.set(key,card);card.dataset.progressId=key;
- const add=document.createElement('button');add.type='button';add.className='queue-add';add.textContent='+';add.setAttribute('aria-label',`Add ${title} to queue`);add.title='Add to queue';card.append(add);add.addEventListener('click',e=>{e.stopPropagation();if(queue.includes(key)){report(`${title} is already in the queue.`,'warning',4000);return}queue.push(key);save();renderQueue();announce(`Added ${title} to the queue.`)});
+ const add=document.createElement('button');add.type='button';add.className='queue-add';add.textContent='+';add.setAttribute('aria-label',`Add ${title} to queue`);add.title='Add to queue';card.append(add);add.addEventListener('click',e=>{e.stopPropagation();if(queue.includes(key)){announce(`${title} is already in the queue.`);return}queue.push(key);save();renderQueue();announce(`Added ${title} to the queue.`)});
  if(card.dataset.season){createSeasonStepper(card.querySelector('.controls'),key,'card');syncSeason(key);return}
- const priorTitleKey=card.dataset.priorKey||`ref-${hash(`${topic}|${title}|${href}`)}`;const legacyScope=topic.replace(/^topic-/,'day-');const legacyKey=card.dataset.priorDayKey||`ref-${hash(`${legacyScope}|${title}|${href}`)}`;const id=`finished-${index+1}-${hash(key)}`;const label=document.createElement('label');label.className='completion-control';label.htmlFor=id;label.title=`Mark complete: ${title}`;label.addEventListener('click',e=>e.stopPropagation());label.addEventListener('pointerdown',e=>e.stopPropagation());const box=document.createElement('input');box.type='checkbox';box.id=id;box.checked=completed.has(key)||completed.has(priorTitleKey)||completed.has(legacyKey);box.setAttribute('aria-label',`Mark complete: ${title}`);const text=document.createElement('span');text.className='sr-only';text.textContent=`Mark complete: ${title}`;label.append(box,text);(card.querySelector('.controls')||card).append(label);setCardState(card,box.checked,key);box.addEventListener('click',e=>e.stopPropagation());box.addEventListener('change',()=>{if(box.checked){card.classList.remove('completion-flash');void card.offsetWidth;card.classList.add('completion-flash');setTimeout(()=>{card.classList.remove('completion-flash');setCardState(card,true,key);save();updateMeter();renderQueueTimesOnly()},470)}else{card.classList.remove('completion-flash');setCardState(card,false,key);save();updateMeter();renderQueueTimesOnly()}});
+ const priorTitleKey=card.dataset.priorKey||`ref-${hash(`${topic}|${title}|${href}`)}`;const legacyScope=topic.replace(/^topic-/,'day-');const legacyKey=card.dataset.priorDayKey||`ref-${hash(`${legacyScope}|${title}|${href}`)}`;const id=`finished-${index+1}-${hash(key)}`;const label=document.createElement('label');label.className='completion-control';label.htmlFor=id;label.title=`Mark complete: ${title}`;label.addEventListener('click',e=>e.stopPropagation());label.addEventListener('pointerdown',e=>e.stopPropagation());const box=document.createElement('input');box.type='checkbox';box.id=id;box.checked=completed.has(key)||completed.has(priorTitleKey)||completed.has(legacyKey);box.setAttribute('aria-label',`Mark complete: ${title}`);const text=document.createElement('span');text.className='sr-only';text.textContent=`Mark complete: ${title}`;label.append(box,text);(card.querySelector('.controls')||card).append(label);setCardState(card,box.checked,key);box.addEventListener('click',e=>e.stopPropagation());box.addEventListener('change',()=>{if(box.checked){card.classList.remove('completion-flash');void card.offsetWidth;card.classList.add('completion-flash');setTimeout(()=>{card.classList.remove('completion-flash');setCardState(card,true,key);save();updateMeter();renderQueueTimesOnly();applyFilters()},470)}else{card.classList.remove('completion-flash');setCardState(card,false,key);save();updateMeter();renderQueueTimesOnly();applyFilters()}});
 });
 function createSeasonStepper(container,id,context){const card=cardById.get(id),title=card.querySelector('h3').textContent.trim(),group=document.createElement('div');group.className=`season-stepper ${context==='queue'?'queue-season-stepper':''}`;group.dataset.seasonId=id;group.setAttribute('role','group');group.setAttribute('aria-label',`Sequential episode progress for ${title}. The numbered button shows the next episode to complete.`);const back=document.createElement('button');back.type='button';back.className='season-step back';back.textContent='←';back.title='Move back one episode';const advance=document.createElement('button');advance.type='button';advance.className='season-step advance';group.append(back,advance);container.append(group);back.addEventListener('click',e=>{e.stopPropagation();setSeasonProgress(id,(seasonProgress[id]||0)-1,false)});advance.addEventListener('click',e=>{e.stopPropagation();setSeasonProgress(id,(seasonProgress[id]||0)+1,true)});return group}
-function setSeasonProgress(id,value,confirmAdvance=false){const card=cardById.get(id),{total}=seasonMeta(card),previous=seasonProgress[id]||0;seasonProgress[id]=Math.max(0,Math.min(total,value));syncSeason(id);save();updateMeter();renderQueueTimesOnly();if(confirmAdvance&&seasonProgress[id]>previous)flashSeasonProgress(id)}
+function setSeasonProgress(id,value,confirmAdvance=false){const card=cardById.get(id),{total}=seasonMeta(card),previous=seasonProgress[id]||0;seasonProgress[id]=Math.max(0,Math.min(total,value));syncSeason(id);save();updateMeter();renderQueueTimesOnly();applyFilters();if(confirmAdvance&&seasonProgress[id]>previous)flashSeasonProgress(id)}
 function flashSeasonProgress(id){for(const group of [...document.querySelectorAll('.season-stepper')].filter(x=>x.dataset.seasonId===id)){group.classList.remove('progress-confirmed');void group.offsetWidth;group.classList.add('progress-confirmed');setTimeout(()=>group.classList.remove('progress-confirmed'),480)}}
 function syncSeason(id){const card=cardById.get(id),{total}=seasonMeta(card),n=Math.max(0,Math.min(total,seasonProgress[id]||0));seasonProgress[id]=n;setCardState(card,total>0&&n===total,id);for(const group of [...document.querySelectorAll('.season-stepper')].filter(x=>x.dataset.seasonId===id)){const back=group.querySelector('.back'),advance=group.querySelector('.advance');back.disabled=n===0;advance.disabled=n===total;advance.classList.toggle('is-complete',n===total);advance.textContent=n===total?'Complete ✓':`Ep. ${n+1}/${total} →`;advance.setAttribute('aria-label',n===total?`${card.querySelector('h3').textContent.trim()} complete`:`Complete episode ${n+1} of ${total} for ${card.querySelector('h3').textContent.trim()}`);back.setAttribute('aria-label',`Move ${card.querySelector('h3').textContent.trim()} back one episode; ${n} complete`);}}
 const queueList=document.getElementById('queue-list'),queueEmpty=document.getElementById('queue-empty'),queueTime=document.getElementById('queue-time');let tooltip=document.getElementById('queue-tooltip');if(!tooltip){tooltip=document.createElement('div');tooltip.id='queue-tooltip';tooltip.className='queue-tooltip';tooltip.setAttribute('role','tooltip');tooltip.hidden=true;document.body.append(tooltip)}let tooltipTimer=null,tooltipOwner=null,desktopDragId=null,liveDrag=null,dragFrame=0,autoScrollFrame=0,autoScrollSpeed=0;const insertionMarker=document.createElement('li');insertionMarker.className='queue-insertion-marker';insertionMarker.setAttribute('aria-hidden','true');
@@ -715,14 +762,61 @@ function autoScrollTick(){autoScrollFrame=0;if(!liveDrag||!autoScrollSpeed)retur
 function beginLiveDrag(item,id,mode){hideTooltip();cleanupLiveDrag(false);liveDrag={item,id,mode,clientY:0};queueList.style.setProperty('--drag-gap-height',`${Math.ceil(item.getBoundingClientRect().height)}px`);queueList.classList.add('is-reordering');item.classList.add('dragging');if(mode==='desktop')item.classList.add('drag-ghost-source');const next=item.nextElementSibling;queueList.insertBefore(insertionMarker,next)}
 function cleanupLiveDrag(commit){if(!liveDrag)return;const{id,item}=liveDrag;if(commit){const index=markerIndex();queue=queue.filter(x=>x!==id);queue.splice(Math.min(index,queue.length),0,id);save()}item.classList.remove('dragging','drag-ghost-source');for(const node of queueList.querySelectorAll('.queue-item')){node.style.transform='';node.style.transition=''}queueList.classList.remove('is-reordering');queueList.style.removeProperty('--drag-gap-height');insertionMarker.remove();if(dragFrame)cancelAnimationFrame(dragFrame);if(autoScrollFrame)cancelAnimationFrame(autoScrollFrame);dragFrame=autoScrollFrame=0;autoScrollSpeed=0;liveDrag=null;if(commit)renderQueue()}
 function moveQueue(id,delta){const i=queue.indexOf(id),j=i+delta;if(i<0||j<0||j>=queue.length)return;[queue[i],queue[j]]=[queue[j],queue[i]];save();renderQueue()}
-function completeAndRemove(id,item){const card=cardById.get(id);if(!card)return;if(card.dataset.season){seasonProgress[id]=seasonMeta(card).total;syncSeason(id)}else{const box=card.querySelector('.completion-control input');if(box)box.checked=true;setCardState(card,true,id)}save();updateMeter();renderQueueTimesOnly();item.classList.add('completing');const finish=()=>{queue=queue.filter(x=>x!==id);save();renderQueue();announce(`Completed ${card.querySelector('h3').textContent.trim()} and removed it from the queue.`)};if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)finish();else setTimeout(finish,430)}
+function completeAndRemove(id,item){const card=cardById.get(id);if(!card)return;if(card.dataset.season){seasonProgress[id]=seasonMeta(card).total;syncSeason(id)}else{const box=card.querySelector('.completion-control input');if(box)box.checked=true;setCardState(card,true,id)}save();updateMeter();renderQueueTimesOnly();applyFilters();item.classList.add('completing');const finish=()=>{queue=queue.filter(x=>x!==id);save();renderQueue();announce(`Completed ${card.querySelector('h3').textContent.trim()} and removed it from the queue.`)};if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)finish();else setTimeout(finish,430)}
 function renderQueueTimesOnly(){for(const item of queueList.querySelectorAll('.queue-item')){const card=cardById.get(item.dataset.referenceId);if(!card)continue;const d=remainingDuration(card);item.querySelector('.queue-runtime').textContent=d.known?formatMinutes(d.min):'Unknown'}queueTotals()}
 queueList.addEventListener('dragover',e=>{if(!liveDrag||liveDrag.mode!=='desktop')return;e.preventDefault();if(e.dataTransfer)e.dataTransfer.dropEffect='move';scheduleMarker(e.clientY)});queueList.addEventListener('drop',e=>{if(!liveDrag||liveDrag.mode!=='desktop')return;e.preventDefault();cleanupLiveDrag(true)});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&liveDrag){e.preventDefault();cleanupLiveDrag(false)}});
 function renderQueue(){if(liveDrag)cleanupLiveDrag(false);hideTooltip();queue=[...new Set(queue)].filter(id=>cardById.has(id));while(queueList.firstChild)queueList.removeChild(queueList.firstChild);queueEmpty.hidden=queue.length>0;for(const [index,id] of queue.entries()){const card=cardById.get(id),title=card.querySelector('h3').textContent.trim(),href=card.querySelector('h3 a').href,li=document.createElement('li');li.className='queue-item';li.dataset.referenceId=id;li.draggable=true;li.tabIndex=0;li.setAttribute('aria-label',`${title}. Use Alt plus Up or Down Arrow to reorder.`);const handle=document.createElement('button');handle.type='button';handle.className='queue-handle';handle.textContent='⠿';handle.setAttribute('aria-label',`Drag ${title} to reorder`);const main=document.createElement('div');main.className='queue-main queue-tooltip-trigger';main.tabIndex=0;main.setAttribute('aria-label',`${title}. Focus for description.`);const label=document.createElement('div');label.className='queue-label';const titleLink=document.createElement('a');titleLink.className='queue-title-link';titleLink.href=href;titleLink.target='_blank';titleLink.rel='noopener';titleLink.textContent=title;titleLink.draggable=false;titleLink.addEventListener('dragstart',e=>e.preventDefault());label.append(titleLink);main.append(label);if(card.dataset.season)createSeasonStepper(main,id,'queue');const runtime=document.createElement('span');runtime.className='queue-runtime';const actions=document.createElement('div');actions.className='queue-actions';const make=(text,aria,fn,cls='')=>{const b=document.createElement('button');b.type='button';b.className=`queue-action ${cls}`.trim();b.textContent=text;b.setAttribute('aria-label',`${aria} ${title}`);b.addEventListener('click',fn);return b};actions.append(make('✓','Mark complete and remove',e=>{e.stopPropagation();completeAndRemove(id,li)},'complete'),make('×','Remove without completing',()=>{hideTooltip();queue=queue.filter(x=>x!==id);save();renderQueue();announce(`Removed ${title} from the queue.`)},'remove'));li.append(handle,main,runtime,actions);queueList.append(li);const scheduleTooltip=()=>{clearTimeout(tooltipTimer);tooltipTimer=setTimeout(()=>showTooltip(li,card,main),1000)};li.addEventListener('pointerenter',e=>{if(!liveDrag&&e.pointerType!=='touch')scheduleTooltip()});li.addEventListener('pointerleave',hideTooltip);main.addEventListener('focus',()=>showTooltip(li,card,main));main.addEventListener('click',e=>{if(e.target.closest('a,button'))return;showTooltip(li,card,main)});li.addEventListener('focusout',e=>{if(!li.contains(e.relatedTarget))hideTooltip()});li.addEventListener('keydown',e=>{if(e.key==='Escape'){hideTooltip();cleanupLiveDrag(false)}if(e.altKey&&e.key==='ArrowUp'){e.preventDefault();moveQueue(id,-1);queueList.querySelector(`[data-reference-id="${id}"]`)?.focus()}if(e.altKey&&e.key==='ArrowDown'){e.preventDefault();moveQueue(id,1);queueList.querySelector(`[data-reference-id="${id}"]`)?.focus()}});li.addEventListener('dragstart',e=>{desktopDragId=id;beginLiveDrag(li,id,'desktop');if(e.dataTransfer){e.dataTransfer.setData('text/plain',id);e.dataTransfer.effectAllowed='move';try{e.dataTransfer.setDragImage(li,24,20)}catch(_){}}});li.addEventListener('drag',e=>{if(e.clientY) scheduleMarker(e.clientY)});li.addEventListener('dragend',()=>{desktopDragId=null;if(liveDrag)cleanupLiveDrag(false)});li.addEventListener('drop',e=>{e.preventDefault();cleanupLiveDrag(true)});bindTouch(handle,li)}for(const [id,card] of cardById){const b=card.querySelector('.queue-add'),inside=queue.includes(id);b.classList.toggle('in-queue',inside);b.textContent=inside?'✓':'+';b.setAttribute('aria-label',inside?`${card.querySelector('h3').textContent.trim()} is in queue`:`Add ${card.querySelector('h3').textContent.trim()} to queue`)}for(const id of queue)if(cardById.get(id)?.dataset.season)syncSeason(id);renderQueueTimesOnly()}
 function bindTouch(handle,item){let active=false,pointerId=null,id=item.dataset.referenceId;const move=e=>{if(!active||e.pointerId!==pointerId)return;e.preventDefault();scheduleMarker(e.clientY)};const finish=e=>{if(!active||(e&&e.pointerId!==pointerId))return;if(e&&Number.isFinite(e.clientY))placeMarker(e.clientY);active=false;document.removeEventListener('pointermove',move);document.removeEventListener('pointerup',finish);document.removeEventListener('pointercancel',cancel);cleanupLiveDrag(true)};const cancel=e=>{if(!active||(e&&e.pointerId!==pointerId))return;active=false;document.removeEventListener('pointermove',move);document.removeEventListener('pointerup',finish);document.removeEventListener('pointercancel',cancel);cleanupLiveDrag(false)};handle.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse')return;active=true;pointerId=e.pointerId;beginLiveDrag(item,id,'touch');try{handle.setPointerCapture(pointerId)}catch(_){}document.addEventListener('pointermove',move,{passive:false});document.addEventListener('pointerup',finish);document.addEventListener('pointercancel',cancel);e.preventDefault()})}
 window.addEventListener('resize',()=>{if(tooltipOwner&&!tooltip.hidden)positionTooltip(tooltipOwner)});window.addEventListener('scroll',()=>{if(tooltipOwner&&!tooltip.hidden)positionTooltip(tooltipOwner)},true);
-save();updateMeter();renderQueue();if(!persistentStorageAvailable)report('Local browser storage is blocked. The shared cloud tracker will still be used if the connection succeeds.','warning');
-const search=document.getElementById('search'),sections=[...document.querySelectorAll('[data-searchable]')],empty=document.getElementById('empty');search.addEventListener('input',()=>{const q=search.value.trim().toLowerCase();let visible=0;sections.forEach(section=>{const items=[...section.querySelectorAll('.resource,.term')];if(!q){section.classList.remove('hidden');items.forEach(x=>x.classList.remove('hidden'));visible++;return}let hits=0;items.forEach(item=>{const ok=(item.dataset.searchText||item.textContent.toLowerCase()).includes(q);item.classList.toggle('hidden',!ok);if(ok)hits++});const head=section.querySelector('.section-head')?.textContent.toLowerCase().includes(q);if(head)items.forEach(x=>x.classList.remove('hidden'));section.classList.toggle('hidden',!head&&!hits);if(head||hits)visible++});empty.classList.toggle('show',visible===0)});
+save();updateMeter();renderQueue();if(!persistentStorageAvailable)setSyncStatus('Local blocked.','warning','Local browser storage is blocked. The shared cloud tracker will still be used when connected.');
+const search=document.getElementById('search'),filterButton=document.getElementById('completion-filter'),sections=[...document.querySelectorAll('[data-searchable]')],empty=document.getElementById('empty');
+let completionFilter='all';
+const filterLabels={all:'All',watched:'Watched',unwatched:'Unwatched'};
+const filterOrder=['all','watched','unwatched'];
+function applyFilters(){
+ const q=search.value.trim().toLowerCase();let visible=0;
+ sections.forEach(section=>{
+  const items=[...section.querySelectorAll('.resource,.term')],headMatches=!!q&&!!section.querySelector('.section-head')?.textContent.toLowerCase().includes(q);let hits=0;
+  items.forEach(item=>{
+   const isReference=item.classList.contains('resource'),isComplete=item.classList.contains('is-complete');
+   const stateMatches=completionFilter==='all'||(isReference&&(completionFilter==='watched'?isComplete:!isComplete));
+   const textMatches=!q||headMatches||(item.dataset.searchText||item.textContent.toLowerCase()).includes(q);
+   const show=stateMatches&&textMatches;item.classList.toggle('hidden',!show);if(show)hits++;
+  });
+  section.classList.toggle('hidden',hits===0);if(hits)visible++;
+ });
+ if(!visible){
+  const stateWord=completionFilter==='watched'?'watched':completionFilter==='unwatched'?'unwatched':'';
+  empty.textContent=q?`No ${stateWord?stateWord+' ':''}references match that search.`:completionFilter==='watched'?'No watched references yet.':completionFilter==='unwatched'?'No unwatched references remain.':'No references match that filter.';
+ }
+ empty.classList.toggle('show',visible===0);
+}
+function setCompletionFilter(value){
+ completionFilter=value;filterButton.dataset.filter=value;filterButton.textContent=filterLabels[value];
+ const next=filterOrder[(filterOrder.indexOf(value)+1)%filterOrder.length],label=filterLabels[value],nextLabel=filterLabels[next];
+ filterButton.setAttribute('aria-label',`Completion filter: ${label}. Activate to show ${nextLabel} references.`);
+ filterButton.title=`Showing ${label.toLowerCase()} references; press to show ${nextLabel.toLowerCase()}`;
+ applyFilters();
+}
+function validateCanonicalMaster(){
+ const violations=[];
+ const forbiddenHeading=[...document.querySelectorAll('h1,h2,h3')].find(node=>node.textContent.trim().toLowerCase()==='keep these distinctions active');
+ const forbiddenNav=[...document.querySelectorAll('nav a')].find(node=>node.textContent.trim().toLowerCase().includes('keep these distinctions active'));
+ const forbiddenControls=[...document.querySelectorAll('#export-progress,#import-progress,#import-progress-trigger,.progress-tools')];
+ const actualIds=cards.map(card=>card.dataset.referenceId),actualSet=new Set(actualIds),expectedSet=new Set(CANONICAL_REFERENCE_IDS);
+ const missing=CANONICAL_REFERENCE_IDS.filter(id=>!actualSet.has(id)),unexpected=actualIds.filter(id=>!expectedSet.has(id)),duplicates=actualIds.filter((id,index)=>actualIds.indexOf(id)!==index);
+ if(forbiddenHeading||forbiddenNav)violations.push('Removed “Keep These Distinctions Active” UI was restored.');
+ if(forbiddenControls.length)violations.push('Removed progress import/export controls were restored.');
+ if(document.querySelector('.progress-status,#progress-status'))violations.push('The obsolete full-width save notification banner was restored.');
+ if(missing.length||unexpected.length||duplicates.length)violations.push(`Reference manifest mismatch. Missing: ${missing.join(', ')||'none'}; unexpected: ${unexpected.join(', ')||'none'}; duplicates: ${duplicates.join(', ')||'none'}.`);
+ if(cards.length!==70)violations.push(`Expected 70 canonical references, found ${cards.length}.`);
+ if(violations.length)console.error('[CANONICAL SUPABASE MASTER] Non-regression invariant violation:',violations);
+ return violations;
+}
+filterButton.addEventListener('click',()=>setCompletionFilter(filterOrder[(filterOrder.indexOf(completionFilter)+1)%filterOrder.length]));
+search.addEventListener('input',applyFilters);
+setCompletionFilter('all');
+validateCanonicalMaster();
 initializeSharedTracker();
 })();
 </script>
